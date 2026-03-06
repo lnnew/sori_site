@@ -3,7 +3,7 @@
 
 @font-face {
   font-family: 'Yeongwol';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/Yeongwol.woff') format('woff');
+  src: url('/fonts/Yeongwol.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }

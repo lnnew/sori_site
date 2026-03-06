@@ -26,7 +26,7 @@ const MiniGamesContainer = () => {
                             놀이 한 판
                         </h2>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '500px', padding: '0 10px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', width: '100%', maxWidth: '800px', padding: '0 20px', zIndex: 10 }}>
                             <motion.button
                                 whileHover={{ scale: 1.05, filter: 'drop-shadow(0 0 25px rgba(200, 230, 224, 0.8))' }}
                                 whileTap={{ scale: 0.95 }}
@@ -40,7 +40,7 @@ const MiniGamesContainer = () => {
                                 whileHover={{ scale: 1.05, filter: 'drop-shadow(0 0 25px rgba(200, 230, 224, 0.8))' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedGame('2048')}
-                                style={{ ...imgBtnStyle, alignSelf: 'flex-end', marginTop: '-20px' }}
+                                style={{ ...imgBtnStyle, alignSelf: 'flex-end', marginTop: '-60px' }}
                             >
                                 <img src={num2048Img} alt="넘048" style={{ ...iconStyle, width: '200px', height: '200px' }} />
                             </motion.button>
@@ -49,7 +49,7 @@ const MiniGamesContainer = () => {
                                 whileHover={{ scale: 1.05, filter: 'drop-shadow(0 0 25px rgba(200, 230, 224, 0.8))' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedGame('clover')}
-                                style={{ ...imgBtnStyle, alignSelf: 'flex-start', marginTop: '-20px' }}
+                                style={{ ...imgBtnStyle, alignSelf: 'flex-start', marginTop: '-60px' }}
                             >
                                 <img src={cloverImg} alt="클로버 지키기" style={{ ...iconStyle, width: '255px', height: '255px' }} />
                             </motion.button>
