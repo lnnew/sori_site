@@ -38,22 +38,58 @@ const BehindTheScenes = () => {
             });
     }, []);
 
-    const [form, setForm] = useState({ image: '', author: '', caption: '', password: '' });
+    const [form, setForm] = useState({ author: '', caption: '', password: '' });
+    const [fileInput, setFileInput] = useState(null); // the selected File object
+    const [isUploading, setIsUploading] = useState(false);
+    const [preview, setPreview] = useState(null); // local preview URL
 
-    const handleUpload = (e) => {
+    const CLOUD_NAME = 'dsdedmlvx';
+    const UPLOAD_PRESET = 'sori_num';
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setFileInput(file);
+        setPreview(URL.createObjectURL(file));
+    };
+
+    const isVideo = (url) => url && (url.includes('/video/') || /\.(mp4|mov|webm|avi)$/i.test(url));
+
+    const handleUpload = async (e) => {
         e.preventDefault();
         if (!form.author || !form.caption || !form.password) return alert('모든 항목을 입력해주세요.');
 
-        // In a real app we would upload the image to Firebase Storage here
-        // For local UI demo, we'll just use a placeholder if no URL is given.
-        const newImageUrl = form.image || 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=500&h=500&fit=crop';
+        let mediaUrl = 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=500&h=500&fit=crop';
+
+        if (fileInput) {
+            setIsUploading(true);
+            try {
+                const data = new FormData();
+                data.append('file', fileInput);
+                data.append('upload_preset', UPLOAD_PRESET);
+
+                const resourceType = fileInput.type.startsWith('video') ? 'video' : 'image';
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`, {
+                    method: 'POST',
+                    body: data
+                });
+                const json = await res.json();
+                if (!json.secure_url) throw new Error('Upload failed');
+                mediaUrl = json.secure_url;
+            } catch (err) {
+                alert('파일 업로드 실패: ' + err.message);
+                setIsUploading(false);
+                return;
+            }
+            setIsUploading(false);
+        }
 
         const newPost = {
             id: Date.now(),
             author: form.author,
             caption: form.caption,
-            image: newImageUrl,
-            password: form.password, // plain text for demo frontend
+            image: mediaUrl,
+            password: form.password,
             date: new Date().toISOString().split('T')[0]
         };
 
@@ -67,7 +103,9 @@ const BehindTheScenes = () => {
         }).catch(console.error);
 
         localStorage.setItem('soriApp_bts_posts', JSON.stringify(updated));
-        setForm({ image: '', author: '', caption: '', password: '' });
+        setForm({ author: '', caption: '', password: '' });
+        setFileInput(null);
+        setPreview(null);
         setIsModalOpen(false);
     };
 
@@ -133,7 +171,9 @@ const BehindTheScenes = () => {
                                         <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{post.author}</span>
                                         <button onClick={() => handleDelete(post.id, post.password)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem' }}>삭제/수정</button>
                                     </div>
-                                    <img src={post.image} alt="bts" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
+                                    {isVideo(post.image)
+                                        ? <video src={post.image} controls style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
+                                        : <img src={post.image} alt="bts" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />}
                                     <div style={{ padding: '1rem' }}>
                                         <p style={{ color: 'var(--text-main)', fontSize: '0.85rem', lineHeight: '1.5' }}>
                                             <span style={{ fontWeight: 'bold', marginRight: '8px' }}>{post.author}</span>
@@ -150,9 +190,15 @@ const BehindTheScenes = () => {
                                 <div
                                     key={post.id}
                                     onClick={() => setSelectedPost(post)}
-                                    style={{ aspectRatio: '1/1', width: '100%', overflow: 'hidden', background: '#222', cursor: 'pointer' }}
+                                    style={{ aspectRatio: '1/1', width: '100%', overflow: 'hidden', background: '#222', cursor: 'pointer', position: 'relative' }}
                                 >
-                                    <img src={post.image} alt="bts" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    {isVideo(post.image)
+                                        ? <>
+                                            <video src={post.image} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <div style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '1rem' }}>▶</div>
+                                        </>
+                                        : <img src={post.image} alt="bts" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    }
                                 </div>
                             ))}
                         </motion.div>
@@ -173,7 +219,9 @@ const BehindTheScenes = () => {
                                     <button onClick={() => { handleDelete(selectedPost.id, selectedPost.password); setSelectedPost(null); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem' }}>삭제</button>
                                 </div>
 
-                                <img src={selectedPost.image} alt="bts" style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
+                                {isVideo(selectedPost.image)
+                                    ? <video src={selectedPost.image} controls style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
+                                    : <img src={selectedPost.image} alt="bts" style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />}
 
                                 <div style={{ padding: '1rem' }}>
                                     <p style={{ color: 'var(--text-main)', fontSize: '0.9rem', lineHeight: '1.5' }}>
@@ -207,10 +255,22 @@ const BehindTheScenes = () => {
 
                                 <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <input type="text" placeholder="닉네임" value={form.author} onChange={e => setForm({ ...form, author: e.target.value })} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit' }} />
-                                    <textarea placeholder="사진 설명 캡션" value={form.caption} onChange={e => setForm({ ...form, caption: e.target.value })} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit', resize: 'none', height: '80px' }} />
-                                    <input type="password" placeholder="수정/삭제용 팹스워드 (예: 1234)" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit' }} />
-                                    <input type="text" placeholder="이미지 URL (선택사항, 없을시 데모용)" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit', fontSize: '0.8rem' }} />
-                                    <button type="submit" style={{ padding: '14px', borderRadius: '8px', background: 'var(--nacre)', color: '#000', border: 'none', fontWeight: 'bold', marginTop: '0.5rem', cursor: 'pointer' }}>공유하기</button>
+                                    <textarea placeholder="사진/동영상 설명 캡션" value={form.caption} onChange={e => setForm({ ...form, caption: e.target.value })} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit', resize: 'none', height: '80px' }} />
+                                    <input type="password" placeholder="삭제용 비밀번호" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit' }} />
+
+                                    {/* File Upload Area */}
+                                    <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', borderRadius: '8px', border: '2px dashed var(--glass-border)', cursor: 'pointer', gap: '8px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                        {preview
+                                            ? (fileInput?.type?.startsWith('video')
+                                                ? <video src={preview} style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '6px' }} />
+                                                : <img src={preview} style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '6px' }} alt="preview" />)
+                                            : <><span style={{ fontSize: '2rem' }}>📁</span><span>이미지 / 동영상 선택 (선택 안하면 기본 이미지)</span></>}
+                                        <input type="file" accept="image/*,video/*" onChange={handleFileChange} style={{ display: 'none' }} />
+                                    </label>
+
+                                    <button type="submit" disabled={isUploading} style={{ padding: '14px', borderRadius: '8px', background: isUploading ? 'rgba(200,230,224,0.4)' : 'var(--nacre)', color: '#000', border: 'none', fontWeight: 'bold', marginTop: '0.5rem', cursor: isUploading ? 'not-allowed' : 'pointer' }}>
+                                        {isUploading ? '업로드 중... ⏳' : '공유하기'}
+                                    </button>
                                 </form>
                             </motion.div>
                         </div>
