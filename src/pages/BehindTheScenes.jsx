@@ -7,6 +7,7 @@ const BehindTheScenes = () => {
     const [viewMode, setViewMode] = useState('gallery'); // 'feed' | 'gallery'
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [randomPost, setRandomPost] = useState(null);
+    const [selectedPost, setSelectedPost] = useState(null);
     const [posts, setPosts] = useState([]);
 
     // Load from backend or local storage on mount
@@ -146,11 +147,43 @@ const BehindTheScenes = () => {
                     ) : (
                         <motion.div key="gallery" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
                             {posts.map((post) => (
-                                <div key={post.id} style={{ aspectRatio: '1/1', width: '100%', overflow: 'hidden', background: '#222' }}>
+                                <div
+                                    key={post.id}
+                                    onClick={() => setSelectedPost(post)}
+                                    style={{ aspectRatio: '1/1', width: '100%', overflow: 'hidden', background: '#222', cursor: 'pointer' }}
+                                >
                                     <img src={post.image} alt="bts" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
                             ))}
                         </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Post Detail Modal (Instagram-like) */}
+                <AnimatePresence>
+                    {selectedPost && (
+                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 300, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedPost(null)} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} />
+
+                            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="glass-panel" style={{ width: '100%', maxWidth: '450px', overflow: 'hidden', position: 'relative', zIndex: 301, padding: 0 }}>
+                                <button onClick={() => setSelectedPost(null)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}><X size={18} /></button>
+
+                                <div style={{ padding: '0.8rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--glass-border)' }}>
+                                    <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{selectedPost.author}</span>
+                                    <button onClick={() => { handleDelete(selectedPost.id, selectedPost.password); setSelectedPost(null); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem' }}>삭제</button>
+                                </div>
+
+                                <img src={selectedPost.image} alt="bts" style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
+
+                                <div style={{ padding: '1rem' }}>
+                                    <p style={{ color: 'var(--text-main)', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                                        <span style={{ fontWeight: 'bold', marginRight: '8px' }}>{selectedPost.author}</span>
+                                        {selectedPost.caption}
+                                    </p>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.6rem' }}>{selectedPost.date}</p>
+                                </div>
+                            </motion.div>
+                        </div>
                     )}
                 </AnimatePresence>
 
