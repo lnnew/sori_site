@@ -169,7 +169,12 @@ const BehindTheScenes = () => {
                                 <div key={post.id} className="glass-panel" style={{ overflow: 'hidden' }}>
                                     <div style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{post.author}</span>
-                                        <button onClick={() => handleDelete(post.id, post.password)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem' }}>삭제/수정</button>
+                                        <button
+                                            onClick={() => handleDelete(post.id, post.password)}
+                                            style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px' }}
+                                        >
+                                            삭제
+                                        </button>
                                     </div>
                                     {isVideo(post.image)
                                         ? <video src={post.image} controls style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
@@ -212,12 +217,22 @@ const BehindTheScenes = () => {
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedPost(null)} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} />
 
                             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="glass-panel" style={{ width: '100%', maxWidth: '450px', overflow: 'hidden', position: 'relative', zIndex: 301, padding: 0 }}>
-                                <button onClick={() => setSelectedPost(null)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', borderRadius: '50%', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}><X size={18} /></button>
-
                                 <div style={{ padding: '0.8rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--glass-border)' }}>
                                     <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{selectedPost.author}</span>
-                                    <button onClick={() => { handleDelete(selectedPost.id, selectedPost.password); setSelectedPost(null); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.8rem' }}>삭제</button>
+                                    <button
+                                        onClick={() => { handleDelete(selectedPost.id, selectedPost.password); setSelectedPost(null); }}
+                                        style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '12px' }}
+                                    >
+                                        삭제
+                                    </button>
                                 </div>
+
+                                <button
+                                    onClick={() => setSelectedPost(null)}
+                                    style={{ position: 'absolute', top: '-45px', right: '0', background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '1rem' }}
+                                >
+                                    <X size={24} /> 닫기
+                                </button>
 
                                 {isVideo(selectedPost.image)
                                     ? <video src={selectedPost.image} controls style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
