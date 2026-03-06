@@ -13,14 +13,14 @@ const CloverGame = () => {
     const gameState = useRef({
         x: 250,
         y: 100,
-        vx: (Math.random() - 0.5) * 5 * 2.0,
-        vy: 3.5 * 2.0,
+        vx: (Math.random() - 0.5) * 5 * 1.6,
+        vy: 3.5 * 1.6,
         gravity: 0, // No gravity
         paddleX: 250,
         paddleWidth: 120,
         paddleHeight: 18,
         size: 40, // Clover size reduced
-        bounceDecay: 1.05, // Speed increases slightly on bounce
+        bounceDecay: 1.1, // Faster speed increase (10% per bounce)
         rotation: 0,
         rSpeed: (Math.random() - 0.5) * 5,
 
@@ -74,8 +74,8 @@ const CloverGame = () => {
             ...gameState.current,
             x: canvas.width / 2,
             y: 100,
-            vx: (Math.random() - 0.5) * 5 * 2.0,
-            vy: 3.5 * 2.0,
+            vx: (Math.random() - 0.5) * 5 * 1.6,
+            vy: 3.5 * 1.6,
             gravity: 0,
             rotation: 0,
             rSpeed: (Math.random() - 0.5) * 5,
@@ -285,14 +285,14 @@ const CloverGame = () => {
 
                 <div style={{
                     position: 'relative', width: '100%', maxWidth: '500px',
-                    aspectRatio: '1 / 1',
+                    aspectRatio: '1 / 1.5',
                     border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden',
                     background: 'rgba(0,0,0,0.3)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
                 }}>
                     <canvas
                         ref={canvasRef}
                         width={500}
-                        height={500}
+                        height={750}
                         style={{ width: '100%', height: '100%', display: 'block', touchAction: 'none' }}
                         onMouseMove={handleMouseMove}
                         onTouchMove={handleTouchMove}
