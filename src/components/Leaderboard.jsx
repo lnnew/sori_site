@@ -85,7 +85,7 @@ const Leaderboard = ({ gameKey, currentScore, onRestart, scoreDesc = "점수", h
                 </h3>
             )}
 
-            {!isSubmitted && currentScore !== null && (
+            {!isSubmitted && currentScore !== null && currentScore !== undefined && (
                 <form onSubmit={handleSubmit} style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <div style={{ textAlign: 'center', color: '#fff', marginBottom: '10px' }}>
                         내 기록: <strong style={{ color: 'var(--nacre)', fontSize: '1.2rem' }}>{currentScore}</strong> {scoreDesc}

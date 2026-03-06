@@ -8,7 +8,7 @@ import kkomantleImg from '../assets/images/미니게임/넘맨틀.png';
 import cloverImg from '../assets/images/미니게임/클로버.png';
 import num2048Img from '../assets/images/미니게임/넘048.png';
 import Leaderboard from '../components/Leaderboard';
-import { Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const MiniGamesContainer = () => {
     const [selectedGame, setSelectedGame] = useState(null);
