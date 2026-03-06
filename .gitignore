@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Large model files
+*.gz
+*.bin
+*.vec
+compute_fasttext.py
+remove_bg.py
+update_colors.py

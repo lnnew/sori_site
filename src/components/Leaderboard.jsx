@@ -20,6 +20,7 @@ const Leaderboard = ({ gameKey, currentScore, onRestart, scoreDesc = "점수" })
             });
     }, [gameKey]);
 
+
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
