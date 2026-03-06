@@ -13,11 +13,11 @@ const CloverGame = () => {
     const gameState = useRef({
         x: 250,
         y: 100,
-        vx: (Math.random() - 0.5) * 5 * 1.6,
-        vy: 3.5 * 1.6,
+        vx: (Math.random() - 0.5) * 5 * 1.76,
+        vy: 3.5 * 1.76,
         gravity: 0, // No gravity
         paddleX: 250,
-        paddleWidth: 120,
+        paddleWidth: 96,
         paddleHeight: 18,
         size: 40, // Clover size reduced
         bounceDecay: 1.1, // Faster speed increase (10% per bounce)
@@ -75,8 +75,8 @@ const CloverGame = () => {
             ...gameState.current,
             x: canvas.width / 2,
             y: 100,
-            vx: (Math.random() - 0.5) * 5 * 1.6,
-            vy: 3.5 * 1.6,
+            vx: (Math.random() - 0.5) * 5 * 1.76,
+            vy: 3.5 * 1.76,
             gravity: 0,
             rotation: 0,
             rSpeed: (Math.random() - 0.5) * 5,
@@ -87,7 +87,7 @@ const CloverGame = () => {
             rushDuration: 0,
             trail: [],
             frameCount: 0,
-            paddleWidth: 120
+            paddleWidth: 96
         };
 
         if (reqRef.current) cancelAnimationFrame(reqRef.current);
@@ -141,8 +141,8 @@ const CloverGame = () => {
 
         // Score 20+: paddle gradually shrinks
         if (state.currentScore >= 20) {
-            const shrinkAmount = Math.min((state.currentScore - 20) * 2, 60);
-            state.paddleWidth = Math.max(120 - shrinkAmount, 60);
+            const shrinkAmount = Math.min((state.currentScore - 20) * 2, 40);
+            state.paddleWidth = Math.max(96 - shrinkAmount, 50);
         }
 
         // Wall collisions
@@ -291,8 +291,8 @@ const CloverGame = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '4rem 20px 90px', boxSizing: 'border-box' }}>
-            <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '1.5rem 20px 110px', boxSizing: 'border-box' }}>
+            <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
                 <h2 className="title-glow" style={{ fontFamily: "'Yeongwol', serif", color: '#fff', fontSize: '2.4rem', marginBottom: '0.2rem', letterSpacing: '2px' }}>
                     클로버 지키기
                 </h2>
@@ -304,15 +304,16 @@ const CloverGame = () => {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
                 <div style={{
-                    position: 'relative', width: '100%', maxWidth: '500px',
-                    aspectRatio: '1 / 1.5',
+                    position: 'relative', width: '100%', maxWidth: '480px',
+                    aspectRatio: '1 / 1.75',
                     border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden',
-                    background: 'rgba(0,0,0,0.3)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
+                    background: 'rgba(0,0,0,0.3)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
+                    marginTop: '-20px'
                 }}>
                     <canvas
                         ref={canvasRef}
                         width={500}
-                        height={750}
+                        height={875}
                         style={{ width: '100%', height: '100%', display: 'block', touchAction: 'none' }}
                         onMouseMove={handleMouseMove}
                         onTouchMove={handleTouchMove}
