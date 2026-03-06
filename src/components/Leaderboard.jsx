@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Leaderboard = ({ gameKey, currentScore, onRestart, scoreDesc = "점수" }) => {
+const Leaderboard = ({ gameKey, currentScore, onRestart, scoreDesc = "점수", hideTitle = false }) => {
     const [leaderboard, setLeaderboard] = useState([]);
     const [nickname, setNickname] = useState('');
     const [photo, setPhoto] = useState(null);
@@ -79,9 +79,11 @@ const Leaderboard = ({ gameKey, currentScore, onRestart, scoreDesc = "점수" })
                 boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
             }}
         >
-            <h3 style={{ color: 'var(--nacre)', textAlign: 'center', marginBottom: '1.5rem', fontFamily: "'Gowun Dodum', sans-serif" }}>
-                🏆 명예의 전당 🏆
-            </h3>
+            {!hideTitle && (
+                <h3 style={{ color: 'var(--nacre)', textAlign: 'center', marginBottom: '1.5rem', fontFamily: "'Gowun Dodum', sans-serif" }}>
+                    🏆 명예의 전당 🏆
+                </h3>
+            )}
 
             {!isSubmitted && currentScore !== null && (
                 <form onSubmit={handleSubmit} style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '15px' }}>

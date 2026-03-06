@@ -8,6 +8,13 @@
   font-style: normal;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
 :root {
   --bg-dark: #07090f;
   --bg-darker: #020305;
