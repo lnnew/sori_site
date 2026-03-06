@@ -30,7 +30,8 @@ const CloverGame = () => {
         isRush: false,
         rushCountdown: 0,
         rushDuration: 0,
-        trail: []
+        trail: [],
+        frameCount: 0
     });
 
     const reqRef = useRef(null);
@@ -84,7 +85,9 @@ const CloverGame = () => {
             isRush: false,
             rushCountdown: Math.random() * 240 + 60, // 1~5s in frames
             rushDuration: 0,
-            trail: []
+            trail: [],
+            frameCount: 0,
+            paddleWidth: 120
         };
 
         if (reqRef.current) cancelAnimationFrame(reqRef.current);
@@ -126,12 +129,20 @@ const CloverGame = () => {
             }
         }
 
-        // Trail recording for Rush effect
-        if (state.isRush) {
+        // Trail - active from score 10+
+        state.frameCount++;
+        if (state.currentScore >= 10) {
             state.trail.push({ x: state.x, y: state.y, size: state.size });
-            if (state.trail.length > 20) state.trail.shift();
+            const maxTrail = state.isRush ? 30 : 15;
+            if (state.trail.length > maxTrail) state.trail.shift();
         } else {
             if (state.trail.length > 0) state.trail.shift();
+        }
+
+        // Score 20+: paddle gradually shrinks
+        if (state.currentScore >= 20) {
+            const shrinkAmount = Math.min((state.currentScore - 20) * 2, 60);
+            state.paddleWidth = Math.max(120 - shrinkAmount, 60);
         }
 
         // Wall collisions
@@ -213,14 +224,23 @@ const CloverGame = () => {
         ctx.fillRect(state.paddleX - state.paddleWidth / 2, paddleY, state.paddleWidth, state.paddleHeight);
         ctx.shadowBlur = 0;
 
-        // Draw Clover
+        // Draw Clover with score-based effects
         if (imgRef.current) {
+            // Score 15+: pulsing size
+            const pulseSize = state.currentScore >= 15
+                ? state.size + Math.sin(state.frameCount * 0.15) * 12
+                : state.size;
+
             ctx.save();
             ctx.translate(state.x, state.y);
             ctx.rotate((state.rotation * Math.PI) / 180);
 
-            // Draw without circle clipping to show PNG transparency natively
-            ctx.drawImage(imgRef.current, -state.size / 2, -state.size / 2, state.size, state.size);
+            // Score 10+: rainbow flashing
+            if (state.currentScore >= 10) {
+                ctx.filter = `hue-rotate(${state.frameCount * 5}deg) saturate(250%) brightness(1.3)`;
+            }
+
+            ctx.drawImage(imgRef.current, -pulseSize / 2, -pulseSize / 2, pulseSize, pulseSize);
             ctx.restore();
         }
 
