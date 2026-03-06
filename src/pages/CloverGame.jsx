@@ -291,9 +291,9 @@ const CloverGame = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '1.5rem 20px 110px', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '2rem 20px 100px', boxSizing: 'border-box' }}>
             <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-                <h2 className="title-glow" style={{ fontFamily: "'Yeongwol', serif", color: '#fff', fontSize: '2.4rem', marginBottom: '0.2rem', letterSpacing: '2px' }}>
+                <h2 className="title-glow" style={{ fontFamily: "'Yeongwol', serif", color: '#fff', fontSize: '2rem', marginBottom: '0.2rem', letterSpacing: '2px' }}>
                     클로버 지키기
                 </h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '1px' }}>
@@ -304,16 +304,16 @@ const CloverGame = () => {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
                 <div style={{
-                    position: 'relative', width: '100%', maxWidth: '480px',
-                    aspectRatio: '1 / 1.75',
+                    position: 'relative', width: '100%', maxWidth: '340px',
+                    aspectRatio: '1 / 1.4',
                     border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden',
                     background: 'rgba(0,0,0,0.3)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
-                    marginTop: '-20px'
+                    marginTop: '-40px'
                 }}>
                     <canvas
                         ref={canvasRef}
                         width={500}
-                        height={875}
+                        height={700}
                         style={{ width: '100%', height: '100%', display: 'block', touchAction: 'none' }}
                         onMouseMove={handleMouseMove}
                         onTouchMove={handleTouchMove}
