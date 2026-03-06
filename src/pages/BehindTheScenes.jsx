@@ -4,8 +4,9 @@ import { Grid, List, Plus, X } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
 const BehindTheScenes = () => {
-    const [viewMode, setViewMode] = useState('feed'); // 'feed' | 'gallery'
+    const [viewMode, setViewMode] = useState('gallery'); // 'feed' | 'gallery'
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [randomPost, setRandomPost] = useState(null);
     const [posts, setPosts] = useState([]);
 
     // Load from backend or local storage on mount
@@ -87,12 +88,19 @@ const BehindTheScenes = () => {
         }
     };
 
+    const handleRandomPick = () => {
+        if (posts.length === 0) return;
+        const idx = Math.floor(Math.random() * posts.length);
+        setRandomPost(posts[idx]);
+    };
+
     return (
         <PageTransition>
             <div style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                     <h2 className="serif" style={{ color: 'var(--nacre)', margin: 0 }}>BEHIND THE SCENES</h2>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <button onClick={handleRandomPick} title="랜덤 사진 돌버" style={{ background: 'transparent', border: 'none', color: 'var(--nacre)', fontSize: '1.2rem', cursor: 'pointer', padding: '4px 6px' }}>🎲</button>
                         <button onClick={() => setViewMode('feed')} style={{ background: 'transparent', border: 'none', color: viewMode === 'feed' ? 'var(--nacre)' : 'var(--text-muted)' }}>
                             <List size={22} />
                         </button>
@@ -101,6 +109,18 @@ const BehindTheScenes = () => {
                         </button>
                     </div>
                 </div>
+
+                {/* Random Photo Modal */}
+                {randomPost && (
+                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 300, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={() => setRandomPost(null)}>
+                        <div style={{ maxWidth: '400px', width: '100%' }} onClick={e => e.stopPropagation()}>
+                            <img src={randomPost.image} alt="random" style={{ width: '100%', borderRadius: '12px', objectFit: 'cover', aspectRatio: '1/1' }} />
+                            <p style={{ color: '#fff', textAlign: 'center', marginTop: '1rem', fontWeight: 'bold' }}>{randomPost.author}</p>
+                            <p style={{ color: 'var(--text-muted)', textAlign: 'center', fontSize: '0.85rem' }}>{randomPost.caption}</p>
+                            <button onClick={handleRandomPick} style={{ display: 'block', margin: '1rem auto 0', padding: '10px 24px', background: 'var(--nacre)', color: '#000', border: 'none', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }}>다시 뽑기 🎲</button>
+                        </div>
+                    </div>
+                )}
 
                 {/* View Layouts */}
                 <AnimatePresence mode="wait">

@@ -13,8 +13,8 @@ const CloverGame = () => {
     const gameState = useRef({
         x: 250,
         y: 100,
-        vx: (Math.random() - 0.5) * 5 * 1.7, // Even faster initial x speed
-        vy: 3.5 * 1.7, // Even faster constant fall speed
+        vx: (Math.random() - 0.5) * 5 * 2.0,
+        vy: 3.5 * 2.0,
         gravity: 0, // No gravity
         paddleX: 250,
         paddleWidth: 120,
@@ -74,8 +74,8 @@ const CloverGame = () => {
             ...gameState.current,
             x: canvas.width / 2,
             y: 100,
-            vx: (Math.random() - 0.5) * 5 * 1.7,
-            vy: 3.5 * 1.7, // Start moving down at 1.7x faster baseline
+            vx: (Math.random() - 0.5) * 5 * 2.0,
+            vy: 3.5 * 2.0,
             gravity: 0,
             rotation: 0,
             rSpeed: (Math.random() - 0.5) * 5,
@@ -284,7 +284,8 @@ const CloverGame = () => {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
                 <div style={{
-                    position: 'relative', width: '100%', maxWidth: '500px', height: '500px',
+                    position: 'relative', width: '100%', maxWidth: '500px',
+                    aspectRatio: '1 / 1',
                     border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', overflow: 'hidden',
                     background: 'rgba(0,0,0,0.3)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
                 }}>

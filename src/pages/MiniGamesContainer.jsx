@@ -22,11 +22,11 @@ const MiniGamesContainer = () => {
                         exit={{ opacity: 0 }}
                         style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
                     >
-                        <h2 className="title-glow" style={{ fontFamily: "'Yeongwol', serif", color: '#fff', fontSize: '2.4rem', marginBottom: '2rem', letterSpacing: '2px' }}>
-                            미니게임 아케이드
+                        <h2 className="title-glow" style={{ fontFamily: "'Yeongwol', cursive", color: '#fff', fontSize: '2.4rem', marginBottom: '1.5rem', letterSpacing: '2px' }}>
+                            놀이 한 판
                         </h2>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '400px', padding: '10px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '500px', padding: '0 10px' }}>
                             <motion.button
                                 whileHover={{ scale: 1.05, filter: 'drop-shadow(0 0 25px rgba(200, 230, 224, 0.8))' }}
                                 whileTap={{ scale: 0.95 }}
@@ -40,7 +40,7 @@ const MiniGamesContainer = () => {
                                 whileHover={{ scale: 1.05, filter: 'drop-shadow(0 0 25px rgba(200, 230, 224, 0.8))' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedGame('2048')}
-                                style={{ ...imgBtnStyle, alignSelf: 'center', marginLeft: 'auto', marginTop: '-30px' }}
+                                style={{ ...imgBtnStyle, alignSelf: 'flex-end', marginTop: '-20px' }}
                             >
                                 <img src={num2048Img} alt="넘048" style={{ ...iconStyle, width: '200px', height: '200px' }} />
                             </motion.button>
@@ -49,7 +49,7 @@ const MiniGamesContainer = () => {
                                 whileHover={{ scale: 1.05, filter: 'drop-shadow(0 0 25px rgba(200, 230, 224, 0.8))' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedGame('clover')}
-                                style={{ ...imgBtnStyle, alignSelf: 'flex-start', marginTop: '-30px' }}
+                                style={{ ...imgBtnStyle, alignSelf: 'flex-start', marginTop: '-20px' }}
                             >
                                 <img src={cloverImg} alt="클로버 지키기" style={{ ...iconStyle, width: '255px', height: '255px' }} />
                             </motion.button>

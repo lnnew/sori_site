@@ -146,7 +146,7 @@ const Numbers = () => {
                                 {currentNumber.hasLyrics ? (
                                     <div className="serif" style={{
                                         color: '#eee',
-                                        fontSize: '1.1rem',
+                                        fontSize: '0.77rem',
                                         lineHeight: '2.4',
                                         whiteSpace: 'pre-line',
                                         textAlign: 'center',

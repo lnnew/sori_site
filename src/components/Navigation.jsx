@@ -8,7 +8,7 @@ const Navigation = ({ activeSection }) => {
         { id: "numbers", label: "넘버" },
         { id: "creators", label: "스태프" },
         { id: "bts", label: "연습실" },
-        { id: "game", label: "미니게임" },
+        { id: "game", label: "놀이 한 판" },
     ];
 
     return (
