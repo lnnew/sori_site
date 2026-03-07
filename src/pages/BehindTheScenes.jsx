@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Grid, List, Plus, X, Heart, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Grid, List, Plus, X, Heart, MessageCircle, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import PageTransition from '../components/PageTransition';
 
 // Helper: check admin or matching password (handles undefined/null passwords)
@@ -74,6 +74,7 @@ const BehindTheScenes = () => {
     const [selectedPost, setSelectedPost] = useState(null);
     const [editingPost, setEditingPost] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [activeMenuId, setActiveMenuId] = useState(null); // ID of post whose "..." menu is open
 
     useEffect(() => {
         fetch('https://kvdb.io/RrstMNy45q8KjYXtvzMkPQ/soriApp_bts_posts')
@@ -266,9 +267,32 @@ const BehindTheScenes = () => {
                                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(200,230,224,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--nacre)' }}>{post.author[0]}</div>
                                             <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{post.author}</span>
                                         </div>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <button onClick={() => handleEditPrompt(post)} style={{ background: 'rgba(200,230,224,0.1)', border: 'none', color: 'var(--nacre)', fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', cursor: 'pointer' }}>수정</button>
-                                            <button onClick={() => handleDelete(post.id, post.password)} style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px', cursor: 'pointer' }}>삭제</button>
+                                        <div style={{ position: 'relative' }}>
+                                            <button
+                                                onClick={() => setActiveMenuId(activeMenuId === post.id ? null : post.id)}
+                                                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '5px' }}
+                                            >
+                                                <MoreHorizontal size={20} />
+                                            </button>
+                                            <AnimatePresence>
+                                                {activeMenuId === post.id && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.95 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.95 }}
+                                                        style={{ position: 'absolute', top: '100%', right: 0, background: 'rgba(20,20,20,0.95)', border: '1px solid var(--glass-border)', borderRadius: '8px', zIndex: 10, minWidth: '80px', padding: '5px', backdropFilter: 'blur(10px)', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}
+                                                    >
+                                                        <button
+                                                            onClick={() => { handleEditPrompt(post); setActiveMenuId(null); }}
+                                                            style={{ width: '100%', background: 'none', border: 'none', color: 'var(--nacre)', padding: '8px 12px', textAlign: 'left', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                        >수정</button>
+                                                        <button
+                                                            onClick={() => { handleDelete(post.id, post.password); setActiveMenuId(null); }}
+                                                            style={{ width: '100%', background: 'none', border: 'none', color: '#ff6b6b', padding: '8px 12px', textAlign: 'left', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                        >삭제</button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
                                     </div>
 
@@ -342,9 +366,34 @@ const BehindTheScenes = () => {
                             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="glass-panel" style={{ width: '100%', maxWidth: '450px', overflow: 'hidden', position: 'relative', zIndex: 301, padding: 0, maxHeight: '90vh', overflowY: 'auto' }}>
                                 <div style={{ padding: '0.8rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--glass-border)' }}>
                                     <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{selectedPost.author}</span>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button onClick={() => handleEditPrompt(selectedPost)} style={{ background: 'rgba(200,230,224,0.1)', border: 'none', color: 'var(--nacre)', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '12px', cursor: 'pointer' }}>수정</button>
-                                        <button onClick={() => handleDelete(selectedPost.id, selectedPost.password)} style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '12px', cursor: 'pointer' }}>삭제</button>
+                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                        <div style={{ position: 'relative' }}>
+                                            <button
+                                                onClick={() => setActiveMenuId(activeMenuId === `modal_${selectedPost.id}` ? null : `modal_${selectedPost.id}`)}
+                                                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '5px' }}
+                                            >
+                                                <MoreHorizontal size={20} />
+                                            </button>
+                                            <AnimatePresence>
+                                                {activeMenuId === `modal_${selectedPost.id}` && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.95 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.95 }}
+                                                        style={{ position: 'absolute', top: '100%', right: 0, background: 'rgba(20,20,20,0.95)', border: '1px solid var(--glass-border)', borderRadius: '8px', zIndex: 10, minWidth: '80px', padding: '5px', backdropFilter: 'blur(10px)', boxShadow: '0 4px 15px rgba(0,0,0,0.5)' }}
+                                                    >
+                                                        <button
+                                                            onClick={() => { handleEditPrompt(selectedPost); setActiveMenuId(null); }}
+                                                            style={{ width: '100%', background: 'none', border: 'none', color: 'var(--nacre)', padding: '8px 12px', textAlign: 'left', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                        >수정</button>
+                                                        <button
+                                                            onClick={() => { handleDelete(selectedPost.id, selectedPost.password); setActiveMenuId(null); }}
+                                                            style={{ width: '100%', background: 'none', border: 'none', color: '#ff6b6b', padding: '8px 12px', textAlign: 'left', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                        >삭제</button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                         <button onClick={() => setSelectedPost(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
                                     </div>
                                 </div>

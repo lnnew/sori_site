@@ -38,7 +38,7 @@ const Numbers = () => {
                 <div style={{ padding: '0 20px', zIndex: 10, position: 'relative', textAlign: 'center' }}>
 
                     <p style={{ color: 'var(--nacre-dim)', fontFamily: "'Noto Serif KR', serif", fontSize: '0.85rem', marginBottom: '0.5rem', letterSpacing: '2px' }}>
-                        NUMBERS {currentIndex + 1} / {numbersData.length - 1}
+                        {currentIndex === 0 ? "MUSIC VIDEO" : `NUMBERS ${currentIndex} / ${numbersData.length - 1}`}
                     </p>
 
                     <div
