@@ -144,35 +144,25 @@ const Numbers = () => {
                                 </div>
 
                                 {currentNumber.youtubeId && (
-                                    <div style={{ width: '100%', maxWidth: '500px', margin: '0 auto 2rem' }}>
-                                        <a
-                                            href={`https://www.youtube.com/watch?v=${currentNumber.youtubeId}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{ display: 'block', position: 'relative', textDecoration: 'none', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)' }}
-                                        >
-                                            <img
-                                                src={`https://img.youtube.com/vi/${currentNumber.youtubeId}/hqdefault.jpg`}
-                                                alt="뮤직비디오 썸네일"
-                                                style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover' }}
+                                    <div style={{ width: '100%', maxWidth: '560px', margin: '0 auto 2rem' }}>
+                                        <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)' }}>
+                                            <iframe
+                                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                                                src={`https://www.youtube-nocookie.com/embed/${currentNumber.youtubeId}?rel=0&modestbranding=1`}
+                                                title="뮤직비디오"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen
                                             />
-                                            <div style={{
-                                                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                                                background: 'rgba(0,0,0,0.3)',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                            }}>
-                                                <div style={{
-                                                    width: '64px', height: '64px', borderRadius: '50%',
-                                                    background: 'rgba(255,0,0,0.85)',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
-                                                }}>
-                                                    <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '12px 0 12px 22px', borderColor: 'transparent transparent transparent white', marginLeft: '4px' }} />
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.8rem', letterSpacing: '1px' }}>
-                                            ▶ 클릭하면 YouTube에서 재생됩니다
+                                        </div>
+                                        <p style={{ textAlign: 'center', marginTop: '0.8rem' }}>
+                                            <a
+                                                href={`https://www.youtube.com/watch?v=${currentNumber.youtubeId}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ color: 'var(--text-muted)', fontSize: '0.75rem', letterSpacing: '1px' }}
+                                            >
+                                                YouTube에서 보기 ↗
+                                            </a>
                                         </p>
                                     </div>
                                 )}
