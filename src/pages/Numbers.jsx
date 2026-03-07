@@ -143,6 +143,21 @@ const Numbers = () => {
                                     </p>
                                 </div>
 
+                                {currentNumber.youtubeId && (
+                                    <div style={{ width: '100%', maxWidth: '600px', aspectRatio: '16/9', margin: '0 auto 2rem' }}>
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            src={`https://www.youtube.com/embed/${currentNumber.youtubeId}?autoplay=0`}
+                                            title="YouTube video player"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                            style={{ borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        ></iframe>
+                                    </div>
+                                )}
+
                                 {currentNumber.hasLyrics ? (
                                     <div className="serif" style={{
                                         color: '#eee',
@@ -156,11 +171,11 @@ const Numbers = () => {
                                     }}>
                                         {currentNumber.lyrics}
                                     </div>
-                                ) : (
+                                ) : !currentNumber.youtubeId ? (
                                     <div style={{ padding: '4rem 0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                                         <p className="serif" style={{ fontSize: '1rem', fontWeight: '100', letterSpacing: '2px' }}>연주곡입니다.</p>
                                     </div>
-                                )}
+                                ) : null}
                             </div>
                         </motion.div>
                     </AnimatePresence>

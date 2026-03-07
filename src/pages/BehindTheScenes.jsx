@@ -8,6 +8,7 @@ const BehindTheScenes = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [randomPost, setRandomPost] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
+    const [editingPost, setEditingPost] = useState(null); // For edit modal
     const [posts, setPosts] = useState([]);
 
     // Load from backend or local storage on mount
@@ -51,13 +52,18 @@ const BehindTheScenes = () => {
         if (!file) return;
         setFileInput(file);
         setPreview(URL.createObjectURL(file));
+
+        if (file.lastModified) {
+            const dateStr = new Date(file.lastModified).toISOString().split('T')[0];
+            setForm(prev => ({ ...prev, date: dateStr }));
+        }
     };
 
     const isVideo = (url) => url && (url.includes('/video/') || /\.(mp4|mov|webm|avi)$/i.test(url));
 
     const handleUpload = async (e) => {
         e.preventDefault();
-        if (!form.author || !form.caption || !form.password) return alert('모든 항목을 입력해주세요.');
+        if (!form.author || !form.password) return alert('닉네임과 비밀번호를 입력해주세요.');
 
         let mediaUrl = 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=500&h=500&fit=crop';
 
@@ -113,7 +119,8 @@ const BehindTheScenes = () => {
 
     const handleDelete = (id, storedPw) => {
         const inputPw = prompt('게시글 비밀번호를 입력해주세요:');
-        if (inputPw === storedPw) {
+        if (inputPw === null) return;
+        if (inputPw === storedPw || inputPw.trim() === 'admin') {
             const updated = posts.filter(p => p.id !== id);
             setPosts(updated);
 
@@ -124,9 +131,32 @@ const BehindTheScenes = () => {
             }).catch(console.error);
 
             localStorage.setItem('soriApp_bts_posts', JSON.stringify(updated));
-        } else if (inputPw !== null) {
+            if (selectedPost && selectedPost.id === id) setSelectedPost(null);
+        } else {
             alert('비밀번호가 일치하지 않습니다.');
         }
+    };
+
+    const handleEditPrompt = (post) => {
+        const inputPw = prompt('게시글 비밀번호를 입력해주세요:');
+        if (inputPw === null) return;
+        if (inputPw === post.password || inputPw.trim() === 'admin') {
+            setEditingPost(post);
+        } else {
+            alert('비밀번호가 일치하지 않습니다.');
+        }
+    };
+
+    const submitEdit = (e) => {
+        e.preventDefault();
+        const updated = posts.map(p => p.id === editingPost.id ? editingPost : p);
+        setPosts(updated);
+        savePosts(updated);
+
+        if (selectedPost && selectedPost.id === editingPost.id) {
+            setSelectedPost(editingPost);
+        }
+        setEditingPost(null);
     };
 
     const handleRandomPick = () => {
@@ -141,9 +171,9 @@ const BehindTheScenes = () => {
         savePosts(updated);
     };
 
-    const handleAddComment = (postId, text) => {
+    const handleAddComment = (postId, text, authorName) => {
         if (!text.trim()) return;
-        const comment = { id: Date.now(), text, date: new Date().toLocaleDateString() };
+        const comment = { id: Date.now(), text, author: authorName || '익명', date: new Date().toLocaleDateString() };
         const updated = posts.map(p => p.id === postId ? { ...p, comments: [...(p.comments || []), comment] } : p);
         setPosts(updated);
         savePosts(updated);
@@ -164,14 +194,15 @@ const BehindTheScenes = () => {
     };
 
     const [commentInputs, setCommentInputs] = useState({});
+    const [commentAuthors, setCommentAuthors] = useState({});
 
     return (
         <PageTransition>
             <div style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                     <h2 className="serif" style={{ color: 'var(--nacre)', margin: 0 }}>BEHIND THE SCENES</h2>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <button onClick={handleRandomPick} title="랜덤 사진 돌버" style={{ background: 'transparent', border: 'none', color: 'var(--nacre)', fontSize: '1.2rem', cursor: 'pointer', padding: '4px 6px' }}>🎲</button>
+                    <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+                        <button onClick={handleRandomPick} style={{ background: 'transparent', border: '1px solid var(--nacre)', borderRadius: '15px', color: 'var(--nacre)', fontSize: '0.85rem', cursor: 'pointer', padding: '4px 10px', fontWeight: 'bold' }}>랜덤 ?</button>
                         <button onClick={() => setViewMode('feed')} style={{ background: 'transparent', border: 'none', color: viewMode === 'feed' ? 'var(--nacre)' : 'var(--text-muted)' }}>
                             <List size={22} />
                         </button>
@@ -216,12 +247,20 @@ const BehindTheScenes = () => {
                                             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(200,230,224,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', color: 'var(--nacre)' }}>{post.author[0]}</div>
                                             <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{post.author}</span>
                                         </div>
-                                        <button
-                                            onClick={() => handleDelete(post.id, post.password)}
-                                            style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px' }}
-                                        >
-                                            삭제
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={() => handleEditPrompt(post)}
+                                                style={{ background: 'rgba(200,230,224,0.1)', border: 'none', color: 'var(--nacre)', fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px' }}
+                                            >
+                                                수정
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(post.id, post.password)}
+                                                style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 10px', borderRadius: '12px' }}
+                                            >
+                                                삭제
+                                            </button>
+                                        </div>
                                     </div>
                                     {isVideo(post.image)
                                         ? <video src={post.image} controls style={{ width: '100%', display: 'block', aspectRatio: '1/1', objectFit: 'cover' }} />
@@ -250,7 +289,7 @@ const BehindTheScenes = () => {
                                             <div style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '0.8rem' }}>
                                                 {post.comments.slice(-3).map(c => (
                                                     <p key={c.id} style={{ fontSize: '0.8rem', margin: '4px 0', color: 'var(--text-main)' }}>
-                                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginRight: '5px' }}>익명:</span> {c.text}
+                                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', marginRight: '5px' }}>{c.author || '익명'}:</span> {c.text}
                                                     </p>
                                                 ))}
                                                 {post.comments.length > 3 && <p onClick={() => setSelectedPost(post)} style={{ fontSize: '0.75rem', color: 'var(--nacre-dim)', cursor: 'pointer', marginTop: '4px' }}>댓글 {post.comments.length}개 모두 보기...</p>}
@@ -261,14 +300,21 @@ const BehindTheScenes = () => {
                                         <div style={{ marginTop: '0.8rem', display: 'flex', gap: '10px' }}>
                                             <input
                                                 type="text"
+                                                placeholder="닉네임"
+                                                value={commentAuthors[post.id] || ''}
+                                                onChange={(e) => setCommentAuthors({ ...commentAuthors, [post.id]: e.target.value })}
+                                                style={{ width: '65px', background: 'none', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '16px', padding: '5px 0', outline: 'none' }}
+                                            />
+                                            <input
+                                                type="text"
                                                 placeholder="댓글 달기..."
                                                 value={commentInputs[post.id] || ''}
                                                 onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })}
-                                                onKeyDown={(e) => e.key === 'Enter' && (handleAddComment(post.id, commentInputs[post.id]), setCommentInputs({ ...commentInputs, [post.id]: '' }))}
-                                                style={{ flex: 1, background: 'none', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '0.8rem', padding: '5px 0', outline: 'none' }}
+                                                onKeyDown={(e) => e.key === 'Enter' && (handleAddComment(post.id, commentInputs[post.id], commentAuthors[post.id]), setCommentInputs({ ...commentInputs, [post.id]: '' }))}
+                                                style={{ flex: 1, background: 'none', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '16px', padding: '5px 0', outline: 'none' }}
                                             />
                                             <button
-                                                onClick={() => { handleAddComment(post.id, commentInputs[post.id]); setCommentInputs({ ...commentInputs, [post.id]: '' }); }}
+                                                onClick={() => { handleAddComment(post.id, commentInputs[post.id], commentAuthors[post.id]); setCommentInputs({ ...commentInputs, [post.id]: '' }); }}
                                                 style={{ background: 'none', border: 'none', color: 'var(--nacre)', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
                                             >
                                                 게시
@@ -317,12 +363,20 @@ const BehindTheScenes = () => {
                             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="glass-panel" style={{ width: '100%', maxWidth: '450px', overflow: 'hidden', position: 'relative', zIndex: 301, padding: 0 }}>
                                 <div style={{ padding: '0.8rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--glass-border)' }}>
                                     <span style={{ fontWeight: 'bold', color: 'var(--text-main)', fontSize: '0.9rem' }}>{selectedPost.author}</span>
-                                    <button
-                                        onClick={() => { handleDelete(selectedPost.id, selectedPost.password); setSelectedPost(null); }}
-                                        style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '12px' }}
-                                    >
-                                        삭제
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            onClick={() => handleEditPrompt(selectedPost)}
+                                            style={{ background: 'rgba(200,230,224,0.1)', border: 'none', color: 'var(--nacre)', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '12px' }}
+                                        >
+                                            수정
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(selectedPost.id, selectedPost.password)}
+                                            style={{ background: 'rgba(255,100,100,0.1)', border: 'none', color: '#ff6b6b', fontSize: '0.8rem', padding: '4px 12px', borderRadius: '12px' }}
+                                        >
+                                            삭제
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <button
@@ -359,7 +413,7 @@ const BehindTheScenes = () => {
                                         {selectedPost.comments && selectedPost.comments.map(c => (
                                             <div key={c.id} style={{ marginBottom: '8px' }}>
                                                 <p style={{ fontSize: '0.85rem', margin: '0', color: 'var(--text-main)' }}>
-                                                    <span style={{ color: 'var(--nacre-dim)', fontWeight: 'bold', marginRight: '5px' }}>익명</span> {c.text}
+                                                    <span style={{ color: 'var(--nacre-dim)', fontWeight: 'bold', marginRight: '5px' }}>{c.author || '익명'}</span> {c.text}
                                                 </p>
                                                 <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{c.date}</span>
                                             </div>
@@ -369,14 +423,21 @@ const BehindTheScenes = () => {
                                     <div style={{ marginTop: '1rem', display: 'flex', gap: '10px' }}>
                                         <input
                                             type="text"
+                                            placeholder="닉네임"
+                                            value={commentAuthors[`modal_${selectedPost.id}`] || ''}
+                                            onChange={(e) => setCommentAuthors({ ...commentAuthors, [`modal_${selectedPost.id}`]: e.target.value })}
+                                            style={{ width: '65px', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', borderRadius: '20px', color: 'white', fontSize: '16px', padding: '8px 15px', outline: 'none' }}
+                                        />
+                                        <input
+                                            type="text"
                                             placeholder="댓글 달기..."
                                             value={commentInputs[`modal_${selectedPost.id}`] || ''}
                                             onChange={(e) => setCommentInputs({ ...commentInputs, [`modal_${selectedPost.id}`]: e.target.value })}
-                                            onKeyDown={(e) => e.key === 'Enter' && (handleAddComment(selectedPost.id, commentInputs[`modal_${selectedPost.id}`]), setCommentInputs({ ...commentInputs, [`modal_${selectedPost.id}`]: '' }))}
-                                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', borderRadius: '20px', color: 'white', fontSize: '0.85rem', padding: '8px 15px', outline: 'none' }}
+                                            onKeyDown={(e) => e.key === 'Enter' && (handleAddComment(selectedPost.id, commentInputs[`modal_${selectedPost.id}`], commentAuthors[`modal_${selectedPost.id}`]), setCommentInputs({ ...commentInputs, [`modal_${selectedPost.id}`]: '' }))}
+                                            style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid var(--glass-border)', borderRadius: '20px', color: 'white', fontSize: '16px', padding: '8px 15px', outline: 'none' }}
                                         />
                                         <button
-                                            onClick={() => { handleAddComment(selectedPost.id, commentInputs[`modal_${selectedPost.id}`]); setCommentInputs({ ...commentInputs, [`modal_${selectedPost.id}`]: '' }); }}
+                                            onClick={() => { handleAddComment(selectedPost.id, commentInputs[`modal_${selectedPost.id}`], commentAuthors[`modal_${selectedPost.id}`]); setCommentInputs({ ...commentInputs, [`modal_${selectedPost.id}`]: '' }); }}
                                             style={{ background: 'none', border: 'none', color: 'var(--nacre)', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}
                                         >
                                             게시
@@ -420,6 +481,32 @@ const BehindTheScenes = () => {
 
                                     <button type="submit" disabled={isUploading} style={{ padding: '14px', borderRadius: '8px', background: isUploading ? 'rgba(200,230,224,0.4)' : 'var(--nacre)', color: '#000', border: 'none', fontWeight: 'bold', marginTop: '0.5rem', cursor: isUploading ? 'not-allowed' : 'pointer' }}>
                                         {isUploading ? '업로드 중... ⏳' : '공유하기'}
+                                    </button>
+                                </form>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+
+                {/* Edit Modal */}
+                <AnimatePresence>
+                    {editingPost && (
+                        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 400, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setEditingPost(null)} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)' }} />
+
+                            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '2rem', position: 'relative', zIndex: 401 }}>
+                                <button onClick={() => setEditingPost(null)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: 'var(--text-main)' }}><X size={24} /></button>
+                                <h3 className="serif" style={{ color: 'var(--nacre)', textAlign: 'center', marginBottom: '1.5rem' }}>게시글 수정</h3>
+
+                                <form onSubmit={submitEdit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <textarea
+                                        placeholder="수정할 캡션 내용"
+                                        value={editingPost.caption || ''}
+                                        onChange={e => setEditingPost({ ...editingPost, caption: e.target.value })}
+                                        style={{ padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.5)', color: 'white', fontFamily: 'inherit', resize: 'vertical', minHeight: '100px', fontSize: '16px' }}
+                                    />
+                                    <button type="submit" style={{ padding: '14px', borderRadius: '8px', background: 'var(--nacre)', color: '#000', border: 'none', fontWeight: 'bold', marginTop: '0.5rem', cursor: 'pointer' }}>
+                                        수정 완료
                                     </button>
                                 </form>
                             </motion.div>

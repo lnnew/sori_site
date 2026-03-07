@@ -133,7 +133,7 @@ const Game = () => {
         : guesses; // already ordered by newest first due to unshifting in handleAddResult
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '4rem 20px 90px', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '4rem 20px 90px', boxSizing: 'border-box', overflowX: 'hidden', width: '100%' }}>
             <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                 <h2 className="title-glow" style={{ fontFamily: "'Yeongwol', serif", color: '#fff', fontSize: '2.4rem', marginBottom: '0.2rem', letterSpacing: '2px' }}>
                     넘맨틀
@@ -236,7 +236,8 @@ const Game = () => {
                                 disabled={isCalculating}
                                 style={{
                                     flex: 1, padding: '12px 16px', background: 'rgba(0,0,0,0.5)', border: '1px solid var(--nacre)',
-                                    borderRadius: '30px', color: '#fff', outline: 'none', fontFamily: "'Gowun Dodum', sans-serif"
+                                    borderRadius: '30px', color: '#fff', outline: 'none', fontFamily: "'Gowun Dodum', sans-serif",
+                                    fontSize: '16px'
                                 }}
                             />
                             <button

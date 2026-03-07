@@ -13,8 +13,8 @@ const CloverGame = () => {
     const gameState = useRef({
         x: 250,
         y: 100,
-        vx: (Math.random() - 0.5) * 5 * 1.76,
-        vy: 3.5 * 1.76,
+        vx: (Math.random() - 0.5) * 5 * 2.288,
+        vy: 3.5 * 2.288,
         gravity: 0, // No gravity
         paddleX: 250,
         paddleWidth: 96,
@@ -75,8 +75,8 @@ const CloverGame = () => {
             ...gameState.current,
             x: canvas.width / 2,
             y: 100,
-            vx: (Math.random() - 0.5) * 5 * 1.76,
-            vy: 3.5 * 1.76,
+            vx: (Math.random() - 0.5) * 5 * 2.288,
+            vy: 3.5 * 2.288,
             gravity: 0,
             rotation: 0,
             rSpeed: (Math.random() - 0.5) * 5,

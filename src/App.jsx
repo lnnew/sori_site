@@ -9,6 +9,8 @@ import Creators from './pages/Creators';
 import BehindTheScenes from './pages/BehindTheScenes';
 import MiniGamesContainer from './pages/MiniGamesContainer';
 
+import { Music, Music4 } from 'lucide-react';
+
 import './index.css';
 
 // Background Particle Effect
@@ -82,6 +84,33 @@ function App() {
     };
   }, [activeSection]);
 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Attempt autoplay on mount
+    if (audioRef.current) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((err) => {
+        console.log("Autoplay blocked by browser policy:", err);
+        // Autoplay is likely blocked, user needs to click play manually
+        setIsPlaying(false);
+      });
+    }
+  }, []);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   return (
     <div className="app-container" style={{ overflowY: 'auto', height: '100vh', scrollBehavior: 'smooth' }}>
       <Particles />
@@ -99,6 +128,22 @@ function App() {
           </section>
         ))}
       </div>
+
+      {/* Global BGM Player */}
+      <audio ref={audioRef} src="/우리의소리 음원 v1.mp3" loop playsInline />
+      <button
+        onClick={togglePlay}
+        style={{
+          position: 'fixed', top: '15px', right: '15px', zIndex: 1000,
+          background: 'rgba(0,0,0,0.5)', border: '1px solid var(--nacre)',
+          borderRadius: '50%', width: '40px', height: '40px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--nacre)', cursor: 'pointer',
+          backdropFilter: 'blur(5px)'
+        }}
+      >
+        {isPlaying ? <Music size={18} /> : <Music4 size={18} style={{ opacity: 0.5 }} />}
+      </button>
 
       <Navigation activeSection={activeSection} />
     </div>

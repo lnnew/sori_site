@@ -1,5 +1,13 @@
 [
   {
+    "id": 0,
+    "title": "6. 우리의 소리 (Music Video)",
+    "hasLyrics": false,
+    "credits": "뮤직비디오",
+    "lyrics": "",
+    "youtubeId": "bKlYG1dMBM"
+  },
+  {
     "id": 1,
     "title": "01. 임명식",
     "hasLyrics": true,
